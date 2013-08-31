@@ -23,14 +23,14 @@ var MODULE_INDEX_FILENAME = 'index.dev.html';
 var MODULE_LBL = 'UNI:MODULE:';
 var MODULE_TITLE_TAG = 'h2 class="uni-module-title"';//we wrap in brackets within the code
 var TYPE_PRAGMA_START = 'UNI:TYPE:';//indicates what follows is type section
-var TYPE_PRAGMA_END = "</section>";//last thing we scrape is closing tag
+var TYPE_PRAGMA_END = '</section>';//last thing we scrape is closing tag
 var OPTIONS_PARTIAL_PATH = '/scss/partials/_options.scss';
 var STYLEGUIDE_CSS_PATH = styleguideDir + '/css/styles.css';
 var STYLEGUIDE_INDEX_PATH = styleguideDir + '/index.html';
 
 
 function writeStyleguideHtml(markup, modulesArray) {
-    var index = fs.readFile(STYLEGUIDE_INDEX_PATH, "utf8", function(err, data) {
+    var index = fs.readFile(STYLEGUIDE_INDEX_PATH, 'utf8', function(err, data) {
         if (err) {
             return console.log("Issue reading the file "+STYLEGUIDE_INDEX_PATH+ "\nError: " + err +"\nAborting\n");
         }
@@ -197,13 +197,9 @@ function scrapeModuleTypes(modulePath, types, fn) {
             // that's true do we scrape in the type's markup.
             var currentType = line.split(TYPE_PRAGMA_START)[1].split(' ')[0];
             _.each(types, function(t) {
-                // console.log('t: |' + t +'|');
-                // console.log('currentType: |' + currentType + "|");
                 // remove the wrapping quotes
                 t = t.replace(/[\'\"]/g, '');
-                
                 if (t === currentType) {
-                    console.log("IS SCRAPING TRUE!");
                     isScraping = true;
                 }
             });
@@ -230,6 +226,10 @@ function scrapeModuleTypes(modulePath, types, fn) {
     });
 }
 
+function getFilename(filename, ext) {
+    return path.basename(filename, ext);
+}
+
 /**
  * MAIN
  * 1. creates boiler-plate files
@@ -250,16 +250,9 @@ function main() {
         // Gets called once all modules have been processed
         function finished() {
             // Join all module/types markup and place in to our styleguide/index.html
-            console.log("****************** In createFiles --> finished....");
+            // console.log("****************** In createFiles --> finished....");
             var markup = _.values(styleguideSections).join('\n');
             var modulesArray = _.keys(styleguideSections);
-
-
-
-console.log("\n\n\n\n******** modulesArray *******\n");
-console.log(modulesArray);
-
-            // var markup = styleguideMarkup.join('\n');
             writeStyleguideHtml(markup, modulesArray);
             var styles = cssCompilations.join('\n');
             writeStyleguideCSS(styles);
@@ -276,7 +269,7 @@ console.log(modulesArray);
                 // markup to include in the styleguide for this module
                 _options = fs.readFileSync(path+OPTIONS_PARTIAL_PATH).toString();
                 _options.split('\n').forEach(function(part) {
-                    if(part.search(/\$uni.*\-type/) === 0) { 
+                    if(part.search(/\$uni.*\-type/) === 0) {
                         types = part.split(':')[1].trim().split(' ');
                         console.log('TYPES: ' + types);
                         console.log(_.isArray(types));
@@ -305,53 +298,4 @@ console.log(modulesArray);
     });
 }
 main();
-
-/*
-function readColorFile(name, modulesDir, destPath, islast, func) {
-    // Clear out our global filedata var
-    filedata = '';
-    var input = fs.createReadStream(modulesDir);
-    var remaining = '';
-
-    input.on('data', function(data) {
-        remaining += data;
-        var index = remaining.indexOf('\n');
-        var last  = 0;
-        // Read data line by line
-        while (index > -1) {
-            var line = remaining.substring(last, index);
-            last = index + 1;
-            func(name, line);
-            index = remaining.indexOf('\n', last);
-        }
-        remaining = remaining.substring(last);
-    });
-    input.on('end', function() {
-        func(name, remaining);
-        var str = JSON.stringify(colors);
-        // This will write out our temp JSON file at colors.json
-        fs.writeFile(destPath, str, function(err) {
-            if(err) {
-                console.log(err);
-            }
-            if (islast) {
-                // This will finally write out the colors.js file
-                writeColorsAsJavascript(colorsDest, colorsJSDest);
-            }
-        });
-    });
-}
-
-
-*/
-
-function getExtension(filename) {
-    var ext = path.extname(filename||'').split('.');
-    return ext[ext.length - 1];
-}
-
-function getFilename(filename, ext) {
-    return path.basename(filename, ext);
-}
-
 
