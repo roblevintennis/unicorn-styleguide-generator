@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-/**
- * @class Unicorn-Generate-Styleguide
+
+/** @module uni-generate-styleguide */
+
+ /**
  * Generates a Styleguide from a directory of Unicorn Modules.
  * @author Rob Levin and Alex Wolfe
  */
@@ -9,7 +11,7 @@
  * Create a modules parent directory and place you're modules
  * as sub-directories of that parent. `modulesDirName` must
  * have the same name as that parent directory!
- * @type {String}
+ * @property {string} modulesDirName    - path to your module's parent directory
  */
 var modulesDirName = 'test_modules';
 
