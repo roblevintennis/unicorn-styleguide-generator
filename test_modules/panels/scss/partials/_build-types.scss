@@ -1,0 +1,16 @@
+//////////////////////////////////////////////////////////
+// BUILD TYPES (don't edit this!)  ///////////////////////
+//////////////////////////////////////////////////////////
+// Purpose of this file is to set global flags for which
+// types we'll include in our final css build or not.
+$build-panel-fancy: false;
+$build-panel-rounded: false;
+@each $type in $uni-panel-types {
+    @if $type == 'fancy' {
+        $build-panel-fancy: true;
+    }
+    @else if $type == 'rounded' {
+        $build-panel-rounded: true;
+    }
+}
+//@debug "$build-glow is #{$build-glow}";

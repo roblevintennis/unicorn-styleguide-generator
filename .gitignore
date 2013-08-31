@@ -2,5 +2,7 @@
 .sass-cache/*
 .gitignore/*
 node_modules
-modules
 
+
+test_modules/panels/.sass-cache/*
+test_modules/panels2/.sass-cache/*

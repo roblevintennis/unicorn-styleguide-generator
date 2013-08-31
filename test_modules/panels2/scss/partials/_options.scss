@@ -1,0 +1,28 @@
+//////////////////////////////////////////////////////////
+// BASE DEFAULTS /////////////////////////////////////////
+//////////////////////////////////////////////////////////
+@function pxtoem($target, $context){
+    @return ($target/$context)+0em;
+}
+$uni-panel-namespace: '.panel'; //prefix for all classes
+$uni-panel-context: 16px;
+$uni-padding-px: 20px;
+$uni-panel-bg: darken(#fff, 5%) !default;
+$uni-panel-padding: pxtoem($uni-padding-px, $uni-panel-context) !default;
+$uni-panel-border-style: solid !default;
+$uni-panel-border-size: 1px !default;
+$uni-panel-margin-bottom: pxtoem($uni-padding-px, $uni-panel-context) !default;
+$uni-panel-font-color: #333 !default;
+$uni-panel-rounded-radius: pxtoem($uni-padding-px/2, $uni-panel-context);
+$uni-panel-shadow-color: black;
+$uni-panel-gradient-start: white;
+$uni-panel-gradient-stop: #aaa;
+// (name background-color font-color) add as many as you like.
+//$uni-panel-actions: ('primary' #00A1CB #FFF) ('action' #7db500 #FFF) ('highlight' #F18D05 #FFF)('caution' #E54028 #FFF) ('royal' #87318C #FFF);
+// Remove a type to omit from final CSS build. **However note,
+// 'simple' type here is ignored and will always be built :)
+$uni-panel-types: 'simple' 'fancy' 'rounded';
+//$uni-panel-sizes: 'large' 'small' 'tiny';
+
+/// PLEASE DO NOT REMOVE FOLLOWING IMPORT! ///
+@import 'build-types';

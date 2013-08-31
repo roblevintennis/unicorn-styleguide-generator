@@ -1,0 +1,28 @@
+@import 'compass';
+@import 'options'; // EDIT STYLES AND OPTIONS IN _options.scss
+@mixin panel($bg, $padding) {
+    border: $uni-panel-border-size $uni-panel-border-style darken($bg, 10%);
+    margin-bottom: $uni-panel-margin-bottom;
+    padding: $padding;
+    background: $bg;
+    color: $uni-panel-font-color;
+    // TODO:
+    // &:hover {}
+    // &:active {}
+    // &:focus{}
+}
+#{$uni-panel-namespace} {
+    @include panel($uni-panel-bg, $uni-panel-padding);
+    @if ($build-panel-rounded) {
+        &.rounded {
+            @include border-radius($uni-panel-rounded-radius);
+        }
+    }
+    @if ($build-panel-fancy) {
+        &.fancy {
+            @include background-image(linear-gradient($uni-panel-gradient-start, $uni-panel-gradient-stop));
+            @include box-shadow(0 2px 2px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.5));
+        }
+    }
+}
+

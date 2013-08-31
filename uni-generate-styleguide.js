@@ -1,10 +1,20 @@
 #!/usr/bin/env node
+
+/**
+ * Create a modules parent directory and place you're modules
+ * as sub-directories of that parent. `modulesDirName` must
+ * have the same name as that parent directory!
+ * @type {String}
+ */
+var modulesDirName = 'test_modules';
+
+
+
+
 var fs = require('fs');
 var exec = require('child_process').exec;
 var _ = require('underscore')._;
-//spawn = require('child_process').spawn,
 var path = require('path');
-var modulesDirName = 'modules';
 var modulesDir = path.join(path.dirname(process.argv[1]), './'+modulesDirName);
 var styleguideDirName = 'styleguide';
 var styleguideDir = path.join(path.dirname(process.argv[1]), './'+styleguideDirName);
@@ -18,14 +28,24 @@ var OPTIONS_PARTIAL_PATH = '/scss/partials/_options.scss';
 var STYLEGUIDE_CSS_PATH = styleguideDir + '/css/styles.css';
 var STYLEGUIDE_INDEX_PATH = styleguideDir + '/index.html';
 
-function writeStyleguideHtml(markup) {
+
+function writeStyleguideHtml(markup, modulesArray) {
     var index = fs.readFile(STYLEGUIDE_INDEX_PATH, "utf8", function(err, data) {
         if (err) {
             return console.log("Issue reading the file "+STYLEGUIDE_INDEX_PATH+ "\nError: " + err +"\nAborting\n");
         }
         // Essentially, we'll replace the line <!-- UNI:STYLEGUIDE --> with our
-        // scraped <sections> FTW ... oh yeah .. I'm excited ... can you tell :)
+        // scraped <sections> markup
         var content = data.replace(/\<\!\-\-.UNI\:STYLEGUIDE.\-\-\>/g, markup);
+
+        // Generates sidebar of module names and injects in place of UNI:SIDEBAR
+        var sidebar = '<ul>';
+        for (var i=0; i<modulesArray.length; i++) {
+            sidebar += '<li><a href="#">'+modulesArray[i]+'</a></li>';
+        }
+        sidebar += '</ul>';
+        content = content.replace(/\<\!\-\-.UNI\:SIDEBAR.\-\-\>/g, sidebar);
+
         fs.writeFile(STYLEGUIDE_INDEX_PATH, content, 'utf8', function(err) {
             if(err) {
                 console.log("Issue writing the styleguide markup file: ", err);
@@ -51,13 +71,10 @@ function writeStyleguideCSS(css) {
  */
 function createFiles(styleguideDir, fn) {
     console.log('--- Writing Boiler-Plate Files ---');
-    // Create files: styleguide/index.html, and, styleguide/css/style.css
     var tpl = styleguideDir + '/index.tpl';
-    // var destPath = styleguideDir + '/index.html';
     console.log("INDEX Path: " + STYLEGUIDE_INDEX_PATH);
     var destPath = STYLEGUIDE_INDEX_PATH;
     fs.createReadStream(tpl).pipe(fs.createWriteStream(destPath));
-    // destPath = styleguideDir + '/css/styles.css';
     destPath = STYLEGUIDE_CSS_PATH;
     fs.writeFile(destPath, '', function(err) {
         if(err) {
@@ -222,24 +239,30 @@ function scrapeModuleTypes(modulePath, types, fn) {
  * 5. writes out styleguide markup and css
  */
 function main() {
-    // start the pipeline by first creating our files
+
+    // Start our pipeline by first creating boiler-plate files
     createFiles(styleguideDir, function(success) {
-        console.log("createFiles callback...");
-        var styleguideMarkup = [],
-            moduleTypeSections = [],
+        var styleguideSections = {},
+            styleguideMarkup = [],
             cssCompilations = [],
             count = 0;
 
         // Gets called once all modules have been processed
         function finished() {
-            // Join styleguideMarkup and place in index.html
+            // Join all module/types markup and place in to our styleguide/index.html
             console.log("****************** In createFiles --> finished....");
-            var markup = styleguideMarkup.join('\n');
-            writeStyleguideHtml(markup);
-            console.log("\n\nMARKUP: " + markup + "\n\n");
+            var markup = _.values(styleguideSections).join('\n');
+            var modulesArray = _.keys(styleguideSections);
+
+
+
+console.log("\n\n\n\n******** modulesArray *******\n");
+console.log(modulesArray);
+
+            // var markup = styleguideMarkup.join('\n');
+            writeStyleguideHtml(markup, modulesArray);
             var styles = cssCompilations.join('\n');
             writeStyleguideCSS(styles);
-            //console.log(styles);
         }
 
         if (success) {
@@ -248,6 +271,7 @@ function main() {
                 var moduleName = getFilename(path),
                     types = [],
                     _options;
+
                 // Read in the uni-<module>-types so we can determine which
                 // markup to include in the styleguide for this module
                 _options = fs.readFileSync(path+OPTIONS_PARTIAL_PATH).toString();
@@ -264,18 +288,11 @@ function main() {
                     //console.log("Compiled css: " + compiledCss);
                     cssCompilations.push(compiledCss);
 
-                    // Save this module's type sections to styleguideMarkup
-                    scrapeModuleTypes(path, types, function(moduleTypes) {
+                    scrapeModuleTypes(path, types, function(moduleTypesMarkup) {
                         // Place a header h1 and append header w/timestamp
-                        if (moduleTypes) {
-                            //TODO: Here we may want to wrap each <module>
-                            //in a wrapper div or something?
-                            moduleTypes = '\n\t<'+MODULE_TITLE_TAG+'>'+moduleName+'</'+MODULE_TITLE_TAG+'>\n' + moduleTypes;
-                            moduleTypes = '\n\n<!-- '+MODULE_LBL+' '+moduleName+' -- ' + getISODateString(new Date()) + ' -->\n\n' + moduleTypes;
-
-                            //console.log('>>moduleTypes: \n'+moduleTypes);
-                        } 
-                        styleguideMarkup.push(moduleTypes);
+                        moduleTypesMarkup = '\n\t<'+MODULE_TITLE_TAG+'>'+moduleName+'</'+MODULE_TITLE_TAG+'>\n' + moduleTypesMarkup;
+                        moduleTypesMarkup = '\n\n<!-- '+MODULE_LBL+' '+moduleName+' -- ' + getISODateString(new Date()) + ' -->\n\n' + moduleTypesMarkup;
+                        styleguideSections[moduleName] = moduleTypesMarkup;
                         ++count;
                         // Once all modules processed it's time for finito
                         if (count === numDirsToProcess) {
