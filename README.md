@@ -1,6 +1,6 @@
 # Styleguide Generator for Unicorn
 
-Allows you to create a modules directory with one to many Unicorn modules, and then generator a styleguide from that directory
+Allows you to create a modules directory with one to many Unicorn modules, and then generate a styleguide from that directory
 -----------------------
 
 ### Usage
