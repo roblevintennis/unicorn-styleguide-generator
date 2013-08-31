@@ -1,4 +1,31 @@
-//#!/usr/bin/env node
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: uni-generate-styleguide.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: uni-generate-styleguide.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>// #!/usr/bin/env node
 /**
  * @class Unicorn-Generate-Styleguide
  * Generates a Styleguide from a directory of Unicorn Modules.
@@ -24,12 +51,12 @@ var path = require('path');
 var modulesDir = path.join(path.dirname(process.argv[1]), './'+modulesDirName);
 var styleguideDirName = 'styleguide';
 var styleguideDir = path.join(path.dirname(process.argv[1]), './'+styleguideDirName);
-var numDirsToProcess;//becomes the number of <module> dirs found
+var numDirsToProcess;//becomes the number of &lt;module> dirs found
 var MODULE_INDEX_FILENAME = 'index.dev.html';
 var MODULE_LBL = 'UNI:MODULE:';
 var MODULE_TITLE_TAG = 'h2 class="uni-module-title"';//we wrap in brackets within the code
 var TYPE_PRAGMA_START = 'UNI:TYPE:';//indicates what follows is type section
-var TYPE_PRAGMA_END = '</section>';//last thing we scrape is closing tag
+var TYPE_PRAGMA_END = '&lt;/section>';//last thing we scrape is closing tag
 var OPTIONS_PARTIAL_PATH = '/scss/partials/_options.scss';
 var STYLEGUIDE_CSS_PATH = styleguideDir + '/css/styles.css';
 var STYLEGUIDE_INDEX_PATH = styleguideDir + '/index.html';
@@ -40,17 +67,17 @@ function writeStyleguideHtml(markup, modulesArray) {
         if (err) {
             return console.log("Issue reading the file "+STYLEGUIDE_INDEX_PATH+ "\nError: " + err +"\nAborting\n");
         }
-        // Essentially, we'll replace the line <!-- UNI:STYLEGUIDE --> with our
-        // scraped <sections> markup
-        var content = data.replace(/\<\!\-\-.UNI\:STYLEGUIDE.\-\-\>/g, markup);
+        // Essentially, we'll replace the line &lt;!-- UNI:STYLEGUIDE --> with our
+        // scraped &lt;sections> markup
+        var content = data.replace(/\&lt;\!\-\-.UNI\:STYLEGUIDE.\-\-\>/g, markup);
 
         // Generates sidebar of module names and injects in place of UNI:SIDEBAR
-        var sidebar = '<ul>';
-        for (var i=0; i<modulesArray.length; i++) {
-            sidebar += '<li><a href="#">'+modulesArray[i]+'</a></li>';
+        var sidebar = '&lt;ul>';
+        for (var i=0; i&lt;modulesArray.length; i++) {
+            sidebar += '&lt;li>&lt;a href="#">'+modulesArray[i]+'&lt;/a>&lt;/li>';
         }
-        sidebar += '</ul>';
-        content = content.replace(/\<\!\-\-.UNI\:SIDEBAR.\-\-\>/g, sidebar);
+        sidebar += '&lt;/ul>';
+        content = content.replace(/\&lt;\!\-\-.UNI\:SIDEBAR.\-\-\>/g, sidebar);
 
         fs.writeFile(STYLEGUIDE_INDEX_PATH, content, 'utf8', function(err) {
             if(err) {
@@ -95,7 +122,7 @@ function createFiles(styleguideDir, fn) {
 
 function getISODateString(d){
     function pad(n) {
-        return n<10 ? '0'+n : n;
+        return n&lt;10 ? '0'+n : n;
     }
     return d.getUTCFullYear()+'-'+
         pad(d.getUTCMonth()+1)+'-'+
@@ -105,7 +132,7 @@ function getISODateString(d){
         pad(d.getUTCSeconds())+'Z';
 }
 /**
- * Locates all <module> subdirs for processing and realizes `numDirsToProcess`
+ * Locates all &lt;module> subdirs for processing and realizes `numDirsToProcess`
  * @param {String} modulesDir path to modules dir
  * @param {Function} fnParseModule callback function
  */
@@ -166,11 +193,11 @@ function compassCompile(modulePath, fn) {
 }
 
 /**
- * Scrapes <module> <type> markup out of that module's corresponding
+ * Scrapes &lt;module> &lt;type> markup out of that module's corresponding
  * index.dev.html file. Does so based on pragma comments like:
- * <pre>
- * <!-- UNI:TYPE -->
- * </pre>
+ * &lt;pre>
+ * &lt;!-- UNI:TYPE -->
+ * &lt;/pre>
  * @param {String} modulePath Path to the module's root directory
  * @param {Array} types Types specified in the module's _options partial
  * @param {Function} fn Callback function
@@ -184,7 +211,7 @@ function scrapeModuleTypes(modulePath, types, fn) {
         input;
 
     // generic is a placeholder for a type that we want included but doesn't
-    // really belong in the $uni-<module>-types of user's _options partial
+    // really belong in the $uni-&lt;module>-types of user's _options partial
     types.push('generic');
     types = _.uniq(types);
     input = fs.createReadStream(modulePath+'/'+MODULE_INDEX_FILENAME);
@@ -198,7 +225,7 @@ function scrapeModuleTypes(modulePath, types, fn) {
         }
         if (line.indexOf(TYPE_PRAGMA_START) > -1) {
 
-            // we read in the <type> off UNI:TYPE:<type> to see if it's in
+            // we read in the &lt;type> off UNI:TYPE:&lt;type> to see if it's in
             // our "white list" of types from user's _options.scss. Only if
             // that's true do we scrape in the type's markup.
             var currentType = line.split(TYPE_PRAGMA_START)[1].split(' ')[0];
@@ -241,7 +268,7 @@ function getFilename(filename, ext) {
  * 1. creates boiler-plate files
  * 2. reads module's in
  * 3. compiles each module's scss
- * 4. scrapes each module's index page for <type> markup sections
+ * 4. scrapes each module's index page for &lt;type> markup sections
  * 5. writes out styleguide markup and css
  */
 function main() {
@@ -271,7 +298,7 @@ function main() {
                     types = [],
                     _options;
 
-                // Read in the uni-<module>-types so we can determine which
+                // Read in the uni-&lt;module>-types so we can determine which
                 // markup to include in the styleguide for this module
                 _options = fs.readFileSync(path+OPTIONS_PARTIAL_PATH).toString();
                 _options.split('\n').forEach(function(part) {
@@ -289,8 +316,8 @@ function main() {
 
                     scrapeModuleTypes(path, types, function(moduleTypesMarkup) {
                         // Place a header h1 and append header w/timestamp
-                        moduleTypesMarkup = '\n\t<'+MODULE_TITLE_TAG+'>'+moduleName+'</'+MODULE_TITLE_TAG+'>\n' + moduleTypesMarkup;
-                        moduleTypesMarkup = '\n\n<!-- '+MODULE_LBL+' '+moduleName+' -- ' + getISODateString(new Date()) + ' -->\n\n' + moduleTypesMarkup;
+                        moduleTypesMarkup = '\n\t&lt;'+MODULE_TITLE_TAG+'>'+moduleName+'&lt;/'+MODULE_TITLE_TAG+'>\n' + moduleTypesMarkup;
+                        moduleTypesMarkup = '\n\n&lt;!-- '+MODULE_LBL+' '+moduleName+' -- ' + getISODateString(new Date()) + ' -->\n\n' + moduleTypesMarkup;
                         styleguideSections[moduleName] = moduleTypesMarkup;
                         ++count;
                         // Once all modules processed it's time for finito
@@ -305,3 +332,26 @@ function main() {
 }
 main();
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#compassCompile">compassCompile</a></li><li><a href="global.html#createFiles">createFiles</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#modulesDirName">modulesDirName</a></li><li><a href="global.html#readModules">readModules</a></li><li><a href="global.html#scrapeModuleTypes">scrapeModuleTypes</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Sat Aug 31 2013 08:51:50 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
