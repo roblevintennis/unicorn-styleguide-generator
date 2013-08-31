@@ -1,0 +1,19 @@
+# Styleguide Generator for Unicorn
+
+Allows you to create a modules directory with one to many Unicorn modules, and then generator a styleguide from that directory
+-----------------------
+
+### Usage
+
+*   Create a `./modules` directory in this root directory
+
+*   Add any Unicorn modules as subdirs (e.g. Buttons, Grids, etc.)
+
+*   Run `npm install` (and as needed for any of the Unicorn modules in `modules` directory
+
+*   Run `./uni-generate-styleguide.js`
+
+*   `open styleguide/index.html`
+
+-------
+
