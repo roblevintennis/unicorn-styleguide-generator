@@ -34,18 +34,9 @@ var modulesDirName = 'path/to/my/modules';
 
 ### JSDoc
 
-Unfortunately (for now) .. comment out first line of uni-generate-styleguide.js:
-
-```javascript
-//#!/usr/bin/env node
-```
-
-Then run:
+Unfortunately, it seems that jsdoc disallows shebang '#' character at top of our main script. So I've created a script to allow generating docs easily. Just run:
 
 ```bash
-./node_modules/jsdoc/jsdoc ./uni-generate-styleguide.js
-open out/index.html
+./makedocs.sh
 ```
-
-//#!/usr/bin/env node
 

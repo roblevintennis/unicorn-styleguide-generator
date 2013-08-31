@@ -1,10 +1,9 @@
-//#!/usr/bin/env node
+#!/usr/bin/env node
 /**
  * @class Unicorn-Generate-Styleguide
  * Generates a Styleguide from a directory of Unicorn Modules.
  * @author Rob Levin and Alex Wolfe
  */
-
 
 /**
  * Create a modules parent directory and place you're modules
@@ -13,9 +12,6 @@
  * @type {String}
  */
 var modulesDirName = 'test_modules';
-
-
-
 
 var fs = require('fs');
 var exec = require('child_process').exec;
