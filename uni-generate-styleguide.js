@@ -26,7 +26,7 @@ var numDirsToProcess;//becomes the number of <module> dirs found
 var MODULE_INDEX_FILENAME = 'index.dev.html';
 var MODULE_LBL = 'UNI:MODULE:';
 var MODULE_TITLE_TAG = 'h2 class="uni-module-title"';//we wrap in brackets within the code
-var TYPE_PRAGMA_START = 'UNI:TYPE:';//indicates what follows is type section
+var TYPE_PRAGMA_START = /<section.*data\-type=/;//indicates is section with date-type attr
 var TYPE_PRAGMA_END = '</section>';//last thing we scrape is closing tag
 var OPTIONS_PARTIAL_PATH = '/scss/partials/_options.scss';
 var STYLEGUIDE_CSS_PATH = styleguideDir + '/css/styles.css';
@@ -76,7 +76,7 @@ function writeStyleguideCSS(css) {
 function createFiles(styleguideDir, fn) {
     console.log('--- Writing Boiler-Plate Files ---');
     var tpl = styleguideDir + '/index.tpl';
-    console.log("INDEX Path: " + STYLEGUIDE_INDEX_PATH);
+    // console.log("INDEX Path: " + STYLEGUIDE_INDEX_PATH);
     var destPath = STYLEGUIDE_INDEX_PATH;
     fs.createReadStream(tpl).pipe(fs.createWriteStream(destPath));
     destPath = STYLEGUIDE_CSS_PATH;
@@ -138,7 +138,7 @@ function readModules(modulesDir, fnParseModule) {
  * @param {Function} fn callback function
  */
 function compassCompile(modulePath, fn) {
-    console.log("compassCompile entered..modulePath: " + modulePath);
+    // console.log("compassCompile entered..modulePath: " + modulePath);
     var module = getFilename(modulePath);
     var sassDir = modulePath+'/scss';
     var cssDir = modulePath+'/css';
@@ -194,12 +194,18 @@ function scrapeModuleTypes(modulePath, types, fn) {
         if (isScraping) {
             moduleTypesMarkup += line + '\n';
         }
-        if (line.indexOf(TYPE_PRAGMA_START) > -1) {
 
-            // we read in the <type> off UNI:TYPE:<type> to see if it's in
-            // our "white list" of types from user's _options.scss. Only if
-            // that's true do we scrape in the type's markup.
-            var currentType = line.split(TYPE_PRAGMA_START)[1].split(' ')[0];
+        if (line.search(TYPE_PRAGMA_START) >= 0) {
+            // We read in the <type> off the section's data-type=<type> attribute
+            // Then we check to see if it's in our "white list" of types (those
+            // read from the module's  _options.scss partial). Only if that's true
+            // do we then "scrape in" the markup for that <section> ... </section>
+
+            // [^]*? matches any arbitrary character ([^] contains all characters in opposite to . that doesn’t contain line-breaks), but in a non-greedy manner
+            var dataTypeValueRegex = /data\-type=['"]([^]*?)['"]/;
+
+            // Grab the current type
+            var currentType = line.match(dataTypeValueRegex)[1];
             _.each(types, function(t) {
                 // remove the wrapping quotes
                 t = t.replace(/[\'\"]/g, '');
@@ -275,8 +281,8 @@ function main() {
                 _options.split('\n').forEach(function(part) {
                     if(part.search(/\$uni.*\-type/) === 0) {
                         types = part.split(':')[1].trim().split(' ');
-                        console.log('TYPES: ' + types);
-                        console.log(_.isArray(types));
+                        // console.log('TYPES: ' + types);
+                        // console.log(_.isArray(types));
                     }
                 });
 
