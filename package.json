@@ -9,5 +9,11 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:roblevintennis/unicorn-styleguide-generator.git"
+  },
+  "dependencies": {
+    "commander": "~2.0.0"
+  },
+  "devDependencies": {
+    "jsdoc": "~3.2.0"
   }
 }

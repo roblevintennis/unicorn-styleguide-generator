@@ -62,7 +62,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        uni-generate-styleguide-tmp.js, line 2
+        uni-generate-styleguide-tmp.js, line 1
     </li></ul></dd>
     
     
@@ -94,16 +94,28 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="modulesDirName"><span class="type-signature">&lt;inner> </span>modulesDirName<span class="type-signature"></span></h4>
+    <h4 class="name" id="fs"><span class="type-signature">&lt;inner> </span>fs<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
     <div class="description">
-        Create a modules parent directory and place you're modules
-as sub-directories of that parent. `modulesDirName` must
-have the same name as that parent directory!
+        Generates a Styleguide from either a parent directory containing one
+to many Unicorn Modules, or, a directory with just one Unicorn Module.
+These two main use cases can be achieved as follows:
+1. Generate styleguide for modules placed within a parent directory.
+For this use the -M:
+./uni-generate-styleguide.js -M ./test_modules
+This might be useful if you've downloaded several Unicorn Modules for
+which you'd like to generate a single styleguide.
+
+2. Generate a styleguide for a single Unicorn module. For this use
+the -m option:
+./uni-generate-styleguide.js -m ./test_modules/panels
+This is used primarily by Unicorn's Backend (server) to generate a
+styleguide when a user clicks the 'Download' button for a particular
+Unicorn Module.
     </div>
     
     
@@ -113,57 +125,6 @@ have the same name as that parent directory!
 <dl class="details">
     
         
-        <h5 class="subsection-title">Properties:</h5>
-        
-        <dl>
-
-<table class="props">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>modulesDirName</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">path to your module's parent directory</td>
-        </tr>
-	
-	
-	</tbody>
-</table></dl>
-        
-    
-        
     
     
     
@@ -172,6 +133,13 @@ have the same name as that parent directory!
     
     
     
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Rob Levin and Alex Wolfe</li>
+        </ul>
+    </dd>
     
     
     
@@ -183,7 +151,7 @@ have the same name as that parent directory!
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        uni-generate-styleguide-tmp.js, line 15
+        uni-generate-styleguide-tmp.js, line 21
     </li></ul></dd>
     
     
@@ -319,7 +287,7 @@ have the same name as that parent directory!
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        uni-generate-styleguide-tmp.js, line 139
+        uni-generate-styleguide-tmp.js, line 176
     </li></ul></dd>
     
     
@@ -459,7 +427,7 @@ have the same name as that parent directory!
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        uni-generate-styleguide-tmp.js, line 75
+        uni-generate-styleguide-tmp.js, line 100
     </li></ul></dd>
     
     
@@ -533,7 +501,7 @@ have the same name as that parent directory!
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        uni-generate-styleguide-tmp.js, line 244
+        uni-generate-styleguide-tmp.js, line 287
     </li></ul></dd>
     
     
@@ -561,7 +529,7 @@ have the same name as that parent directory!
         
             
 <dt>
-    <h4 class="name" id="readModules"><span class="type-signature">&lt;inner> </span>readModules<span class="signature">(modulesDir, fnParseModule)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="readModules"><span class="type-signature">&lt;inner> </span>readModules<span class="signature">(modulesDir, isParentDir, fnParseModule)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -626,6 +594,30 @@ have the same name as that parent directory!
 	
         <tr>
             
+                <td class="name"><code>isParentDir</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">if false, we will consider modulesDir to be a
+single module's directory. Otherwise, if true, we'll process it's sub-directories.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
                 <td class="name"><code>fnParseModule</code></td>
             
             
@@ -673,7 +665,7 @@ have the same name as that parent directory!
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        uni-generate-styleguide-tmp.js, line 109
+        uni-generate-styleguide-tmp.js, line 136
     </li></ul></dd>
     
     
@@ -840,7 +832,7 @@ index.dev.html file. Does so based on pragma comments like:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        uni-generate-styleguide-tmp.js, line 175
+        uni-generate-styleguide-tmp.js, line 212
     </li></ul></dd>
     
     
@@ -887,7 +879,7 @@ index.dev.html file. Does so based on pragma comments like:
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Sat Aug 31 2013 10:16:19 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Wed Sep 04 2013 07:31:57 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

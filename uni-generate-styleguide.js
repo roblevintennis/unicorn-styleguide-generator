@@ -1,24 +1,49 @@
 #!/usr/bin/env node
-
-/** @module uni-generate-styleguide */
-
+ /** @module uni-generate-styleguide */
  /**
- * Generates a Styleguide from a directory of Unicorn Modules.
+ * Generates a Styleguide from either a parent directory containing one
+ * to many Unicorn Modules, or, a directory with just one Unicorn Module.
+ * These two main use cases can be achieved as follows:
+ * 1. Generate styleguide for modules placed within a parent directory.
+ * For this use the -M:
+ * ./uni-generate-styleguide.js -M ./test_modules
+ * This might be useful if you've downloaded several Unicorn Modules for
+ * which you'd like to generate a single styleguide.
+ *
+ * 2. Generate a styleguide for a single Unicorn module. For this use
+ * the -m option:
+ * ./uni-generate-styleguide.js -m ./test_modules/panels
+ * This is used primarily by Unicorn's Backend (server) to generate a
+ * styleguide when a user clicks the 'Download' button for a particular
+ * Unicorn Module.
+ *
  * @author Rob Levin and Alex Wolfe
  */
-
-/**
- * Create a modules parent directory and place you're modules
- * as sub-directories of that parent. `modulesDirName` must
- * have the same name as that parent directory!
- * @property {string} modulesDirName    - path to your module's parent directory
- */
-var modulesDirName = 'test_modules';
-
 var fs = require('fs');
 var exec = require('child_process').exec;
 var _ = require('underscore')._;
 var path = require('path');
+
+// CLI Options stuff
+var program = require('commander');
+program
+    .version('0.0.1')
+    .option('-m, --module-dir [directory]', 'Path to module directory to generate styleguide for')
+    .option('-M, --parent-module-dir [directory]', 'Path to parent directory from which direct sub-directories are considered modules to include when generating the styleguide. If both -m and -M supplied, only the later will be considered and -m will be ignored.')
+
+// TODO: Actually implement logo url and company name...
+    .option('-l, --logo-url [url]', 'URL to your company or project logo')
+    .option('-n, --name [name]', 'Company or project name. Will be used in title of generated styleguide')
+.parse(process.argv);
+// Now set our modules directory according to above options as passed in
+var modulesDirName, isParentDir = false;
+if (program.parentModuleDir) {
+    modulesDirName = program.parentModuleDir;
+    isParentDir = true;
+} else if (program.moduleDir) {
+    modulesDirName = program.moduleDir;
+}
+
 var modulesDir = path.join(path.dirname(process.argv[1]), './'+modulesDirName);
 var styleguideDirName = 'styleguide';
 var styleguideDir = path.join(path.dirname(process.argv[1]), './'+styleguideDirName);
@@ -105,12 +130,24 @@ function getISODateString(d){
 /**
  * Locates all <module> subdirs for processing and realizes `numDirsToProcess`
  * @param {String} modulesDir path to modules dir
+ * @param {Boolean} isParentDir if false, we will consider modulesDir to be a
+ * single module's directory. Otherwise, if true, we'll process it's sub-directories.
  * @param {Function} fnParseModule callback function
  */
-function readModules(modulesDir, fnParseModule) {
+function readModules(modulesDir, isParentDir, fnParseModule) {
     var i, currentFile, stats,
-        dirs = [],
-        files = fs.readdirSync(modulesDir);
+        dirs = [];
+
+    // If not a parent directory, the modulesDir will be the name of the module
+    // directory to process itself. So, in that case, just return that path.
+    if (!isParentDir) {
+        numDirsToProcess = 1;
+        fnParseModule(modulesDir);
+        return;
+    }
+
+    // isParentDir must be truthy, so find direct sub-directories
+    var files = fs.readdirSync(modulesDir);
 
     for (i in files) {
         currentFile = modulesDir + path.sep + files[i];
@@ -270,7 +307,7 @@ function main() {
 
         if (success) {
             // Scrape our modules subdirs
-            readModules(modulesDir, function parseModuleCallback (path) {
+            readModules(modulesDir, isParentDir, function parseModuleCallback (path) {
                 var moduleName = getFilename(path),
                     types = [],
                     _options;
