@@ -6,23 +6,24 @@
  * These two main use cases can be achieved as follows:
  * 1. Generate styleguide for modules placed within a parent directory.
  * For this use the -M:
- * ./uni-generate-styleguide.js -M ./test_modules
+ * ./uni-generate-styleguide.js -M ./test_modules -o my-output-dir
  * This might be useful if you've downloaded several Unicorn Modules for
  * which you'd like to generate a single styleguide.
  *
  * 2. Generate a styleguide for a single Unicorn module. For this use
  * the -m option:
- * ./uni-generate-styleguide.js -m ./test_modules/panels
+ * ./uni-generate-styleguide.js -M ./test_modules -o my-output-dir
  * This is used primarily by Unicorn's Backend (server) to generate a
  * styleguide when a user clicks the 'Download' button for a particular
  * Unicorn Module.
  *
  * @author Rob Levin and Alex Wolfe
  */
-var fs = require('fs');
+var fs = require('fs-extra');
 var exec = require('child_process').exec;
 var _ = require('underscore')._;
 var path = require('path');
+var mkdirp = require('mkdirp');
 
 // CLI Options stuff
 var program = require('commander');
@@ -30,13 +31,15 @@ program
     .version('0.0.1')
     .option('-m, --module-dir [directory]', 'Path to module directory to generate styleguide for')
     .option('-M, --parent-module-dir [directory]', 'Path to parent directory from which direct sub-directories are considered modules to include when generating the styleguide. If both -m and -M supplied, only the later will be considered and -m will be ignored.')
-
+    .option('-o, --output-dir <directory>', 'Path to output directory')
 // TODO: Actually implement logo url and company name...
     .option('-l, --logo-url [url]', 'URL to your company or project logo')
     .option('-n, --name [name]', 'Company or project name. Will be used in title of generated styleguide')
 .parse(process.argv);
 // Now set our modules directory according to above options as passed in
-var modulesDirName, isParentDir = false;
+var modulesDirName,
+    isParentDir = false,
+    outputDir = program.outputDir;
 if (program.parentModuleDir) {
     modulesDirName = program.parentModuleDir;
     isParentDir = true;
@@ -54,8 +57,8 @@ var MODULE_TITLE_TAG = 'h2 class="uni-module-title"';//we wrap in brackets withi
 var TYPE_PRAGMA_START = /<section.*data\-type=/;//indicates is section with date-type attr
 var TYPE_PRAGMA_END = '</section>';//last thing we scrape is closing tag
 var OPTIONS_PARTIAL_PATH = '/scss/partials/_options.scss';
-var STYLEGUIDE_CSS_PATH = styleguideDir + '/css/styles.css';
-var STYLEGUIDE_INDEX_PATH = styleguideDir + '/index.html';
+var STYLEGUIDE_CSS_PATH = outputDir + '/css/styles.css';
+var STYLEGUIDE_INDEX_PATH = outputDir + '/index.html';
 
 
 function writeStyleguideHtml(markup, modulesArray) {
@@ -100,18 +103,35 @@ function writeStyleguideCSS(css) {
  */
 function createFiles(styleguideDir, fn) {
     console.log('--- Writing Boiler-Plate Files ---');
-    var tpl = styleguideDir + '/index.tpl';
-    // console.log("INDEX Path: " + STYLEGUIDE_INDEX_PATH);
-    var destPath = STYLEGUIDE_INDEX_PATH;
-    fs.createReadStream(tpl).pipe(fs.createWriteStream(destPath));
-    destPath = STYLEGUIDE_CSS_PATH;
-    fs.writeFile(destPath, '', function(err) {
-        if(err) {
-            console.log('Issue creating '+destPath+': ', err);
-            fn(false);
+    var cssDir = path.resolve(outputDir + path.sep + 'css');
+
+    // First copy over our entire seed directory to output directory
+    fs.copy(styleguideDir, outputDir, function(err) {
+        if (err) {
+            console.error(err);
         } else {
-            console.log("Styleguide CSS file created at: ", destPath);
-            fn(true);
+            // Now make our outputDir/css directory
+            mkdirp(cssDir, function(err) {
+                if (err) {
+                    console.log('Issue creating '+cssDir+': ', err);
+                } else {
+                    // Now copy over our tpl templates to index.html and styles.css
+                    var tpl = path.resolve(styleguideDir + '/index.tpl');
+                    // console.log("INDEX Path: " + STYLEGUIDE_INDEX_PATH);
+                    var destPath = STYLEGUIDE_INDEX_PATH;
+                    fs.createReadStream(tpl).pipe(fs.createWriteStream(destPath));
+                    destPath = STYLEGUIDE_CSS_PATH;
+                    fs.writeFile(destPath, '', function(err) {
+                        if(err) {
+                            console.log('Issue creating '+destPath+': ', err);
+                            fn(false);
+                        } else {
+                            console.log("Styleguide CSS file created at: ", destPath);
+                            fn(true);
+                        }
+                    });
+                }
+            });
         }
     });
 }
