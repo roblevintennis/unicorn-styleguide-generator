@@ -12,7 +12,7 @@
  *
  * 2. Generate a styleguide for a single Unicorn module. For this use
  * the -m option:
- * ./uni-generate-styleguide.js -M ./test_modules -o my-output-dir
+ * ./uni-generate-styleguide.js -m ./test_modules -o my-output-dir
  * This is used primarily by Unicorn's Backend (server) to generate a
  * styleguide when a user clicks the 'Download' button for a particular
  * Unicorn Module.
