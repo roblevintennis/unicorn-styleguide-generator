@@ -47,7 +47,7 @@ if (program.parentModuleDir) {
     modulesDirName = program.moduleDir;
 }
 
-var modulesDir = path.join(path.dirname(process.argv[1]), './'+modulesDirName);
+var modulesDir = modulesDirName;
 var styleguideDirName = 'styleguide';
 var styleguideDir = path.join(path.dirname(process.argv[1]), './'+styleguideDirName);
 var numDirsToProcess;//becomes the number of <module> dirs found
@@ -60,6 +60,18 @@ var OPTIONS_PARTIAL_PATH = '/scss/partials/_options.scss';
 var STYLEGUIDE_CSS_PATH = outputDir + '/css/styles.css';
 var STYLEGUIDE_INDEX_PATH = outputDir + '/index.html';
 
+// console.log("\n\nDEBUGGING: ");
+// console.log('modulesDir: ' + modulesDir);
+// console.log('styleguideDir: ' + styleguideDir);
+// console.log('STYLEGUIDE_CSS_PATH: ' + STYLEGUIDE_CSS_PATH);
+// console.log('STYLEGUIDE_INDEX_PATH: ' + STYLEGUIDE_INDEX_PATH);
+// console.log("ENDS DEBUGGING\n\n");
+
+function getFilename(filename, ext) {
+    var name = path.basename(filename, ext);
+    // Remove any trailing forward slash as in buttons/
+    return name.replace(/\/$/, '');
+}
 
 function writeStyleguideHtml(markup, modulesArray) {
     var index = fs.readFile(STYLEGUIDE_INDEX_PATH, 'utf8', function(err, data) {
@@ -293,9 +305,6 @@ function scrapeModuleTypes(modulePath, types, fn) {
     });
 }
 
-function getFilename(filename, ext) {
-    return path.basename(filename, ext);
-}
 
 /**
  * MAIN
